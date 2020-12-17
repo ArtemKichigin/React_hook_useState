@@ -1,49 +1,52 @@
-import React, {useState} from 'react'
-
-function computeCounter(){
-    console.log('Some calculations')
-    return Math.trunc(Math.random()*20)
-}
+import React, {useState, useEffect} from 'react'
 
 function App(){
 
-    const [counter, setCounter] = useState(() => {
-        return computeCounter()
+  const [type, setType] = useState('users')
+
+  const [data, setData] = useState([])
+  const [pos, setPos] = useState({
+    x:0, y:0
+  })
+
+  useEffect(() => {
+    fetch(`https://jsonplaceholder.typicode.com/${type}`)
+      .then(response => response.json())
+      .then(json => setData(json))
+
+     return (() => {
+       console.log('clean type')
+     } )
+  }, [type])
+
+  const mouseMoveHandler = event => {
+    setPos({
+      x: event.clientX,
+      y: event.clientY
     })
+  }
 
-    const [state, setState] = useState({
-        title: 'Counter',
-        date: Date.now()
-    })
+  useEffect(() => {
+    console.log('Component did mount')
 
-    function increment(){
-        setCounter(counter+1)
-    }
+    window.addEventListener('mousemove', mouseMoveHandler)
 
-    function decrement(){
-        setCounter(counter-1)
-    }
+    
+  }, [])
 
-    function updateTitle(){
-        setState(prev => {
-            return ({
-                ...prev,
-                title: 'New title'
-            })
-        })
-    }
+  return (
+    <div>
+      <h1>Recoure: {type}</h1>
 
-    return (
+      <button onClick={() => setType('users')}>Users</button>
+      <button onClick={() => setType('todos')}>Todos</button>
+      <button onClick={() => setType('posts')}>Posts</button>
 
-        <div>
-            <h1>counter: {counter}</h1>
-            <button className="btn btn-success" onClick={increment}>Add</button>
-            <button className="btn btn-danger" onClick={decrement}>Take out </button>
-            <button className="btn" onClick={updateTitle}>Change</button>
+      {/*<pre>{JSON.stringify(data, null, 2)}</pre>*/}
+      <pre>{JSON.stringify(pos, null, 2)}</pre>
 
-            <pre>{JSON.stringify(state, null, 2)}</pre>
-        </div>
-    )
+
+    </div>
+  )
 }
-
 export default App
